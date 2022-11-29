@@ -9,7 +9,7 @@ ideal_weight = (user_height - 110) * 1.15
 # отрицательный вес - это рост менее 110 см?
 
 if ideal_weight < 0
-	puts "Ваш вес уже оптимальный"
+  puts "Ваш вес уже оптимальный"
 else
-	puts format("#{user_name.capitalize}, ваш идеальный вес составляет %0.1f кг", ideal_weight)
+  puts format("#{user_name.capitalize}, ваш идеальный вес составляет %0.1f кг", ideal_weight)
 end
