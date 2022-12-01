@@ -9,7 +9,7 @@
 # в данной реализации функционал формально соответствует ТЗ.
 # внешний ввод информации отсутствует
 
-class Stantion
+class Station
   attr_reader :name
 
   def initialize(name)
@@ -28,7 +28,7 @@ class Stantion
   end
 
   def show
-    puts "Станциия #{self} (#{@name}), поезда:"
+    puts "Станция #{self} (#{@name}), поезда:"
     if @trains.size > 0
       @trains.each do |train|
         if train.type == "passenger"
@@ -44,55 +44,55 @@ class Stantion
 end
 
 class Route
-  attr_reader :stantions
+  attr_reader :stations
 
-  def initialize(first_st, last_st)
-    if first_st.class != Stantion
+  def initialize(first_station, last_station)
+    if first_station.class != Station
       puts "Ошибка - первой из указанных станций не существует!"
-    elsif last_st.class != Stantion
+    elsif last_station.class != Station
       puts "Ошибка - второй из указанных станций не существует!"
     else
-      @stantions = [first_st, last_st]
+      @stations = [first_station, last_station]
     end
   end
 
   # добавить станцию в маршрут по идентификатору
-  def add(stantion, position)
-    if stantion.class != Stantion
+  def add(station, position)
+    if station.class != Station
       puts "Ошибка - указанной станции не существует!"
-    elsif position.to_i > @stantions.size || position.to_i < 1
+    elsif position.to_i > @stations.size || position.to_i < 1
       puts "Ошибка - позиция добавляемой станции в списке станций не болжен быть меньше 1 или больше количества станций!"
-    elsif @stantions.include?(stantion) == true
+    elsif @stations.include?(station) == true
       puts "Ошибка - такая станция уже есть в маршруте!"
     else
-      puts "В маршрут #{self} добавлена станция #{stantion} (#{stantion.name})"
-      @stantions.insert(position - 1, stantion)
+      puts "В маршрут #{self} добавлена станция #{station} (#{station.name})"
+      @stations.insert(position - 1, station)
     end
   end
 
   # удалить станцию из маршрута по идентификатору
-  def delete(stantion)
-    if stantion.class != Stantion
+  def delete(station)
+    if station.class != Station
       puts "Ошибка - указанной станции не существует!"
-    elsif @stantions.first == stantion || @stantions.last == stantion
+    elsif @stations.first == station || @stations.last == station
       puts "Ошибка - нельзя удалить начальную или конечную станции"
-    elsif @stantions.include?(stantion) == false
+    elsif @stations.include?(station) == false
       puts "Ошибка - такой станции нет в списке!"
     else
-      puts "Из маршрута #{self} удалена станция #{stantion} (#{stantion.name})"
-      @stantions.delete(stantion)
+      puts "Из маршрута #{self} удалена станция #{station} (#{station.name})"
+      @stations.delete(station)
     end
   end
 
   # вывести все станции маршрута
   def show
     puts "Все остановки маршрута #{self}:"
-    @stantions.each { |st| puts st}
+    @stations.each { |station| puts station}
   end
 end
 
 class Train
-  attr_accessor :speed, :stantion
+  attr_accessor :speed, :station
   attr_reader :route, :number, :type
 
   def initialize(number, type, carriage_count)
@@ -133,63 +133,63 @@ class Train
   # ввести маршрут
   def route=(route)
     @route = route
-    if @stantion
-      @stantion.send_train(self)
+    if @station
+      @station.send_train(self)
     end
-    @stantion = route.stantions[0]
-    @stantion.receive_train(self)
-    @stantion_index = route.stantions.index(@stantion)
+    @station = route.stations[0]
+    @station.receive_train(self)
+    @station_index = route.stations.index(@station)
     puts "Поезду #{self} (номер #{@number}) добавлен маршрут #{route}"
   end
 
   # двигаться вперед по маршруту
   def forward
-    if @stantion == nil
+    if @station == nil
       puts "Ошибка - маршрут следования не определен"
-    elsif @stantion_index >= @route.stantions.size - 1
+    elsif @station_index >= @route.stations.size - 1
       puts "Ошибка - это конечная остановка!"
     else
-      @stantion.send_train(self)
-      @stantion = @route.stantions[@stantion_index + 1]
-      puts "Поезд #{self} (номер #{@number}) движется вперед по маршуту к #{@stantion} (#{@stantion.name})"
-      @stantion.receive_train(self)
-      @stantion_index += 1
+      @station.send_train(self)
+      @station = @route.stations[@station_index + 1]
+      puts "Поезд #{self} (номер #{@number}) движется вперед по маршуту к #{@station} (#{@station.name})"
+      @station.receive_train(self)
+      @station_index += 1
     end
   end
 
   # двигаться назад по маршруту
   def backward
-    if @stantion == nil
+    if @station == nil
       puts "Ошибка - маршрут следования не определен"
-    elsif @stantion_index == 0
+    elsif @station_index == 0
       puts "Ошибка - это конечная остановка!"
     else
-      @stantion.send_train(self)
-      @stantion = @route.stantions[@stantion_index - 1]
-      puts "Поезд #{self} (номер #{@number}) движется назад по маршуту к #{@stantion} (#{@stantion.name})"
-      @stantion.receive_train(self)
-      @stantion_index -= 1
+      @station.send_train(self)
+      @station = @route.stations[@station_index - 1]
+      puts "Поезд #{self} (номер #{@number}) движется назад по маршуту к #{@station} (#{@station.name})"
+      @station.receive_train(self)
+      @station_index -= 1
     end
   end
 
   # вернуть данные о местоположении поезда
   # принято за основу, что "вперед" - это от первой к последней станции
   def location
-    nearest_stantions = []
-    if @stantion_index - 1 < 0
-      nearest_stantions[0] = nil
+    nearest_stations = []
+    if @station_index - 1 < 0
+      nearest_stations[0] = nil
     else
-      nearest_stantions[0] = @route.stantions[@stantion_index - 1]
+      nearest_stations[0] = @route.stations[@station_index - 1]
     end
-    nearest_stantions[1] = @route.stantions[@stantion_index]
-    if @stantion_index > @route.stantions.size
-      nearest_stantions[2] = nil
+    nearest_stations[1] = @route.stations[@station_index]
+    if @station_index > @route.stations.size
+      nearest_stations[2] = nil
     else
-      nearest_stantions[2] = @route.stantions[@stantion_index + 1]
+      nearest_stations[2] = @route.stations[@station_index + 1]
     end
     puts "Ближайшие остановки поезда #{self} (номер #{@number}):"
-    puts nearest_stantions
-    nearest_stantions
+    puts nearest_stations
+    nearest_stations
   end
 end
 
@@ -217,13 +217,13 @@ end
 # tr1.carriage_change_count(20)
 # puts tr1.carriage
 # puts "="*10
-# st1 = Stantion.new("stantion 1")
-# st2 = Stantion.new("stantion 2")
+# st1 = Station.new("station 1")
+# st2 = Station.new("station 2")
 # p st1, st2
 # puts "="*10
-# st3 = Stantion.new("stantion 3")
-# st4 = Stantion.new("stantion 4")
-# st5 = Stantion.new("stantion 5")
+# st3 = Station.new("station 3")
+# st4 = Station.new("station 4")
+# st5 = Station.new("station 5")
 # rou1 = Route.new(st1,st5)
 # p rou1
 # puts "="*10
