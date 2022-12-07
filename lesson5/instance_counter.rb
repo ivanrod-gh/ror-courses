@@ -11,14 +11,6 @@ module InstanceCounter
 
     protected
 
-    def register_instance!
-      if @instances == nil
-        @instances = 0
-      end
-      @instances += 1
-      p @instances
-    end
-
     def instances!
       @instances
     end
@@ -28,12 +20,8 @@ module InstanceCounter
     protected
 
     def register_instance!
-      # self.class.register_instance!   # нет доступа?
-      self.class.send :register_instance!
+      self.class.instance_variable_set(:@instances, 0) if !self.class.instance_variable_defined?(:@instances)
+      self.class.instance_variable_set(:@instances, self.class.instance_variable_get(:@instances) + 1)
     end
   end
 end
-
-
-
-
