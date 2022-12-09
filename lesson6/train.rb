@@ -12,11 +12,16 @@ class Train
   attr_reader :number, :type
 
   def self.all
-    all!
+    @@all
   end
 
   def self.find(number)
-    find!(number)
+    @@all.each do |train|
+      if number == train.number
+        return train
+      end
+    end
+    return nil
   end
 
   def initialize(type = '', number)
@@ -24,8 +29,8 @@ class Train
     @type = type
     @carriages = []
     @speed = 0
-    self.class.all! << self
     validate!
+    @@all << self
   end
 
   def validate?
@@ -61,19 +66,6 @@ class Train
   end
 
   protected
-
-  def self.all!
-    @@all
-  end
-
-  def self.find!(number)
-    @@all.each do |train|
-      if number == train.number
-        return train
-      end
-    end
-    return nil
-  end
 
   def validate!
     raise "Неверный формат номера поезда!" if @number !~ /^[а-яёa-z|\d]{3}(-)*[а-яёa-z|\d]{2}$/i
@@ -121,17 +113,17 @@ class Train
 
   def forward!
     @station.send_train(self)
-    @station = nearest_stations![2]
+    @station = nearest_stations[2]
     @station.receive_train(self)
   end
 
   def backward!
     @station.send_train(self)
-    @station = nearest_stations![0]
+    @station = nearest_stations[0]
     @station.receive_train(self)
   end
 
-  def nearest_stations!
+  def nearest_stations
     station_index = @route.stations.find_index(@station)
     nearest_stations = [@route.stations[station_index - 1], @route.stations[station_index], @route.stations[station_index + 1]]
   end

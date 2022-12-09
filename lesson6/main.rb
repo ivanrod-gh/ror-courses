@@ -108,6 +108,12 @@ def manage_route
   end
 end
 
+def select_route
+  puts "Выберите маршрут:"
+  show_all_with_indexes(Route)
+  Route.all[gets.to_i - 1]
+end
+
 def show_route_stations(route)
   route.stations.each { |station| puts station.name}
 end
@@ -120,6 +126,12 @@ def set_train_route
   user_train_select = select_train
   user_route_select = select_route
   user_train_select.route = user_route_select
+end
+
+def select_train
+  puts "Выберите поезд:"
+  show_all_with_indexes(Train)
+  Train.all[gets.to_i - 1]
 end
 
 def add_train_carriage
@@ -140,18 +152,6 @@ end
 def move_train_backward
   user_train_select = select_train
   user_train_select.backward
-end
-
-def select_train
-  puts "Выберите поезд:"
-  show_all_with_indexes(Train)
-  Train.all[gets.to_i - 1]
-end
-
-def select_route
-  puts "Выберите маршрут:"
-  show_all_with_indexes(Route)
-  Route.all[gets.to_i - 1]
 end
 
 puts "Программа управления железной дорогой"

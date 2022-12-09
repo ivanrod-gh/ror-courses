@@ -8,14 +8,14 @@ class Station
   attr_reader :name
 
   def self.all
-    all!
+    @@all
   end
 
   def initialize(name)
     @name = name
     @trains = []
-    self.class.all! << self
     validate!
+    @@all << self
   end
 
   def validate?
@@ -30,19 +30,11 @@ class Station
     send_train!(train)
   end
 
-  # def show_trains
-  #   show_trains!
-  # end
-
   def trains
-    trains!
+    @trains
   end
 
   private
-
-  def self.all!
-    @@all
-  end
 
   def validate!
     raise "Название станции должно состоять минимум из 4 символов!" if @name.length < 4
@@ -56,9 +48,5 @@ class Station
 
   def send_train!(train)
     @trains.delete(train)
-  end
-  
-  def trains!
-    @trains
   end
 end

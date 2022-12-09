@@ -6,12 +6,6 @@ module InstanceCounter
 
   module ClassMethods
     def instances
-      instances!
-    end
-
-    protected
-
-    def instances!
       @instances
     end
   end
