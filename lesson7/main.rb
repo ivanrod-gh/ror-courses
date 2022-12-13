@@ -137,13 +137,13 @@ def add_train_carriage
   user_train_select = select_train
   case user_train_select.type
   when 'passenger'
-    puts "Введите количество мест в вагоне (от #{PassengerСarriage::SEAT_COUNT_MIN} до #{PassengerСarriage::SEAT_COUNT_MAX} штук):"
-    user_seat_count = gets.to_i
-    user_train_select.carriage_add(user_seat_count)
+    puts "Введите количество мест в вагоне (от #{Carriage::VOLUME_MIN} до #{Carriage::VOLUME_MAX} штук):"
+    user_carriage_volume = gets.to_i
+    user_train_select.carriage_add(user_carriage_volume)
   when 'cargo'
-    puts "Введите общий объем вагона (от #{СargoСarriage::VOLUME_SIZE_MIN} до #{СargoСarriage::VOLUME_SIZE_MAX} куб. метров):"
-    user_volume_size = gets.to_f
-    user_train_select.carriage_add(user_volume_size)
+    puts "Введите общий объем вагона (от #{Carriage::VOLUME_MIN} до #{Carriage::VOLUME_MAX} куб. метров):"
+    user_carriage_volume = gets.to_f
+    user_train_select.carriage_add(user_carriage_volume)
   end
 end
 
@@ -158,7 +158,7 @@ def occupy_carriage
     puts "Выберите вагон поезда:"
     user_carriage_select = user_train_select.carriages[gets.to_i - 1]
     if user_carriage_select.type == "passenger"
-      user_carriage_select.occupy_seat
+      user_carriage_select.occupy_volume(1)
     else
       puts "Введите объем, который необходимо занять:"
       user_carriage_additional_volume_to_occupy = gets.to_f
@@ -175,9 +175,9 @@ def show_train_carriages
     Train.process_carriages(user_train_select) do |carriage|
       index += 1
       if carriage.type == "passenger"
-        puts "Вагон номер #{index}, пассажирский, число занятых/свободных мест: #{carriage.seat_occupied_count}/#{carriage.seat_realesed_count}"
+        puts "Вагон номер #{index}, пассажирский, число занятых/свободных мест: #{carriage.volume_occupied}/#{carriage.volume_realesed}"
       else
-        puts "Вагон номер #{index}, грузовой, занятый/свободный объём: #{carriage.volume_occupied_size}/#{carriage.volume_realesed_size}"
+        puts "Вагон номер #{index}, грузовой, занятый/свободный объём: #{carriage.volume_occupied}/#{carriage.volume_realesed}"
       end
     end
   else
