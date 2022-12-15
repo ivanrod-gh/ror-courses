@@ -1,21 +1,27 @@
+# frozen_string_literal: true
+
 require_relative 'instance_counter'
 
 class Route
   include InstanceCounter
 
-  @@all = []
+  @all = []
+
+  class << self
+    attr_reader :all
+
+    private
+
+    attr_writer :all
+  end
 
   attr_reader :name, :stations
-
-  def self.all
-    @@all
-  end
 
   def initialize(name, first_station, last_station)
     @name = name
     @stations = [first_station, last_station]
     validate!
-    @@all << self
+    self.class.all << self
   end
 
   def validate?
@@ -33,12 +39,20 @@ class Route
   private
 
   def validate!
+    validate_name
+    validate_stops
+    true
+  end
+
+  def validate_name
     raise "Название маршрута должно состоять минимум из 4 символов!" if @name.length < 4
     raise "Неверный формат названия маршрута!" if @name !~ /^[а-яёa-z|\d|\s]{4,}$/i
-    raise "Не выбрана начальная и конечная остановки!" if stations[0] == nil && stations[1] == nil
-    raise "Не выбрана начальная или конечная остановка!" if stations[0] == nil || stations[1] == nil
+  end
+
+  def validate_stops
+    raise "Не выбрана начальная остановка!" if stations[0].nil?
+    raise "Не выбрана конечная остановка!" if stations[1].nil?
     raise "Начальная и конечная остановки должны отличаться!" if stations[0] == stations[1]
-    true
   end
 
   def add_station!(station)
@@ -49,4 +63,3 @@ class Route
     @stations.delete(station)
   end
 end
-

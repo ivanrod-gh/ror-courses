@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'passenger_carriage'
 require_relative 'cargo_carriage'
 require_relative 'manufacturer'
@@ -7,25 +9,27 @@ class Train
   include Manufacturer
   include InstanceCounter
 
-  @@all = []
+  @all = []
+
+  class << self
+    attr_reader :all
+
+    protected
+
+    attr_writer :all
+  end
 
   attr_reader :number, :type, :carriages
 
-  def self.all
-    @@all
-  end
-
   def self.find(number)
-    @@all.each do |train|
-      if number == train.number
-        return train
-      end
+    @all.each do |train|
+      return train if number == train.number
     end
-    return nil
+    nil
   end
 
   def self.process_carriages(train, &block)
-    train.carriages.each &block
+    train.carriages.each(&block)
   end
 
   def initialize(number = '', type = '')
@@ -34,7 +38,7 @@ class Train
     @carriages = []
     @speed = 0
     validate!
-    @@all << self
+    self.class.all << self
   end
 
   def validate?
@@ -73,6 +77,7 @@ class Train
 
   def validate!
     raise "Неверный формат номера поезда!" if @number !~ /^[а-яёa-z|\d]{3}(-)*[а-яёa-z|\d]{2}$/i
+
     true
   end
 
@@ -85,17 +90,15 @@ class Train
   end
 
   def carriage_add!
-    if train_stopped?
-      @carriages << Carriage.new
-    end
+    @carriages << Carriage.new if train_stopped?
   end
 
   def carriage_remove!
-    if train_stopped?
-      carriage = @carriages[-1]
-      @carriages.delete(carriage)
-      Carriage.all.delete(carriage)
-    end
+    return unless train_stopped?
+
+    carriage = @carriages[-1]
+    @carriages.delete(carriage)
+    Carriage.all.delete(carriage)
   end
 
   def train_stopped?
@@ -104,9 +107,7 @@ class Train
 
   def route!(route)
     @route = route
-    if @station
-      @station.send_train(self)
-    end
+    @station&.send_train(self)
     @station = route.stations[0]
     @station.receive_train(self)
   end
@@ -125,6 +126,6 @@ class Train
 
   def nearest_stations
     station_index = @route.stations.find_index(@station)
-    nearest_stations = [@route.stations[station_index - 1], @route.stations[station_index], @route.stations[station_index + 1]]
+    [@route.stations[station_index - 1], @route.stations[station_index], @route.stations[station_index + 1]]
   end
 end
