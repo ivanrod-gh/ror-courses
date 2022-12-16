@@ -1,22 +1,19 @@
-# frozen_string_literal: true
-
 require_relative 'train'
 
 class CargoTrain < Train
-  @all = []
-
   def initialize(number)
     super(number, 'cargo')
-    self.class.superclass.all << self
   end
 
-  def carriage_add(volume)
-    carriage_add!(volume)
+  def carriage_add(volume_size)
+    carriage_add!(volume_size)
   end
 
   protected
 
-  def carriage_add!(volume)
-    @carriages << CargoCarriage.new(volume) if train_stopped?
+  def carriage_add!(volume_size)
+    if train_stopped?
+      @carriages << СargoСarriage.new(volume_size)
+    end
   end
 end

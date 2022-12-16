@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'manufacturer'
 
 class Carriage
@@ -6,20 +8,24 @@ class Carriage
   VOLUME_MIN = 20
   VOLUME_MAX = 150
 
-  @@all = []
+  @all = []
+
+  class << self
+    attr_reader :all
+
+    protected
+
+    attr_writer :all
+  end
 
   attr_reader :type, :volume_occupied
-
-  def self.all
-    @@all
-  end
 
   def initialize(volume = '', type = '')
     @volume = volume
     @volume_occupied = 0
     @type = type
     validate!
-    @@all << self
+    self.class.all << self
   end
 
   def occupy_volume(volume)
