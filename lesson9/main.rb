@@ -20,7 +20,7 @@ def main_menu_show
 end
 
 def format_message(integer, string)
-  format("%<integer>d  %<string>s", { integer: integer, string: string })
+  format("%2<integer>d  %<string>s", { integer: integer, string: string })
 end
 
 def main_menu_process_user_choise(menu_item)
